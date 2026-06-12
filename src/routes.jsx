@@ -12,6 +12,7 @@ import TestingRoutes from "./pages/testing";
 import Activity from "./pages/activity";
 import Statistics from "./pages/statistics";
 import ActivityTimeline from "./pages/activity_time_line";
+import Unwatched from "./pages/unwatched";
 
 const routes = [
   {
@@ -62,6 +63,11 @@ const routes = [
   {
     path: "/timeline",
     element: <ActivityTimeline />,
+    exact: true,
+  },
+  {
+    path: "/unwatched",
+    element: <Unwatched />,
     exact: true,
   },
   {

@@ -9,7 +9,8 @@
     "SETTINGS": "Configuració",
     "ABOUT": "Sobre nosaltres",
     "LOGOUT": "Tancar sessió",
-    "TIMELINE": "Cronologia"
+    "TIMELINE": "Cronologia",
+    "UNWATCHED": "No vist"
   },
   "HOME_PAGE": {
     "SESSIONS": "Sessions",
@@ -314,5 +315,12 @@
   "X_ROWS_SELECTED": "{ROWS} files seleccionades",
   "TRANSCODE_REASONS": "",
   "SUBTITLES": "Subtítols",
-  "GENRES": "Gèneres"
+  "GENRES": "Gèneres",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Contingut no vist",
+    "MOVIES": "Pel·lícules",
+    "SERIES": "Sèries",
+    "ALL_LIBRARIES": "Totes les biblioteques",
+    "EMPTY": "No s'han trobat continguts no vistos."
+  }
 }

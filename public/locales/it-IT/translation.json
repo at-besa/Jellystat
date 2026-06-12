@@ -8,7 +8,8 @@
     "STATISTICS": "Statistiche",
     "SETTINGS": "Impostazioni",
     "ABOUT": "Informazioni",
-    "LOGOUT": "Disconnetti"
+    "LOGOUT": "Disconnetti",
+    "UNWATCHED": "Non visto"
   },
   "HOME_PAGE": {
     "SESSIONS": "Sessioni",
@@ -311,5 +312,12 @@
   "X_ROWS_SELECTED": "{ROWS} righe selezionate",
   "TRANSCODE_REASONS": "Motivo della transcodifica",
   "SUBTITLES": "Sottotitoli",
-  "GENRES": "Generi"
+  "GENRES": "Generi",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Contenuto non visto",
+    "MOVIES": "Film",
+    "SERIES": "Serie",
+    "ALL_LIBRARIES": "Tutte le librerie",
+    "EMPTY": "Nessun contenuto non visto trovato."
+  }
 }

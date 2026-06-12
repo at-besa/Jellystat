@@ -9,7 +9,8 @@
     "SETTINGS": "Ustawienia",
     "ABOUT": "O programie",
     "LOGOUT": "Wyloguj",
-    "TIMELINE": "Oś czasu"
+    "TIMELINE": "Oś czasu",
+    "UNWATCHED": "Nieobejrzane"
   },
   "HOME_PAGE": {
     "SESSIONS": "Sesje",
@@ -351,5 +352,12 @@
   "X_ROWS_SELECTED": "Zaznaczono {ROWS} wierszy",
   "TRANSCODE_REASONS": "Powody transkodowania",
   "SUBTITLES": "Napisy",
-  "GENRES": "Gatunki"
+  "GENRES": "Gatunki",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Nieobejrzane treści",
+    "MOVIES": "Filmy",
+    "SERIES": "Seriale",
+    "ALL_LIBRARIES": "Wszystkie biblioteki",
+    "EMPTY": "Nie znaleziono nieobejrzanych treści."
+  }
 }

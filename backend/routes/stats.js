@@ -856,6 +856,33 @@ router.get("/getGenreLibraryStats", async (req, res) => {
   }
 });
 
+router.get("/getUnwatchedItems", async (req, res) => {
+  try {
+    const { type = "Movie", libraryid, page = 1, size = 24 } = req.query;
+    const valid_types = ["Movie", "Series"];
+
+    if (!valid_types.includes(type)) {
+      return res.status(400).send(`Invalid Type. Valid: ${JSON.stringify(valid_types)}`);
+    }
+
+    const _page = parseInt(page);
+    const _size = parseInt(size);
+    const offset = (_page - 1) * _size;
+    const lid = libraryid || null;
+
+    const { rows: countRows } = await db.query(`SELECT COUNT(*) FROM fs_unwatched_items($1, $2)`, [type, lid]);
+    const total = parseInt(countRows[0].count);
+    const pages = Math.ceil(total / _size);
+
+    const { rows } = await db.query(`SELECT * FROM fs_unwatched_items($1, $2) LIMIT $3 OFFSET $4`, [type, lid, _size, offset]);
+
+    res.send({ current_page: _page, pages, size: _size, total, results: rows });
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
 // Handle other routes
 router.use((req, res) => {
   res.status(404).send({ error: "Not Found" });

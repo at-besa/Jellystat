@@ -7,6 +7,7 @@ import SettingsFillIcon from 'remixicon-react/SettingsFillIcon';
 import GalleryFillIcon from 'remixicon-react/GalleryFillIcon';
 import UserFillIcon from 'remixicon-react/UserFillIcon';
 import InformationFillIcon from 'remixicon-react/InformationFillIcon';
+import EyeOffFillIcon from 'remixicon-react/EyeOffFillIcon';
 import { Trans } from 'react-i18next';
 
 
@@ -41,7 +42,12 @@ export const navData = [
         text: <Trans i18nKey="MENU_TABS.STATISTICS" />,
         link: "statistics"
     },
-
+    {
+        id: 8,
+        icon: <EyeOffFillIcon />,
+        text: <Trans i18nKey="MENU_TABS.UNWATCHED" />,
+        link: "unwatched"
+    },
     {
         id: 6,
         icon: <SettingsFillIcon />,

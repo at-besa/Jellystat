@@ -9,7 +9,8 @@
     "SETTINGS": "Configuración",
     "ABOUT": "Acerca de",
     "LOGOUT": "Cerrar sesión",
-    "TIMELINE": "Cronología"
+    "TIMELINE": "Cronología",
+    "UNWATCHED": "No visto"
   },
   "HOME_PAGE": {
     "SESSIONS": "Sesiones",
@@ -351,5 +352,12 @@
   "X_ROWS_SELECTED": "{ROWS} filas seleccionadas",
   "TRANSCODE_REASONS": "Razones de transcodificación",
   "SUBTITLES": "Subtítulos",
-  "GENRES": "Géneros"
+  "GENRES": "Géneros",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Contenido no visto",
+    "MOVIES": "Películas",
+    "SERIES": "Series",
+    "ALL_LIBRARIES": "Todas las bibliotecas",
+    "EMPTY": "No se encontró contenido no visto."
+  }
 }

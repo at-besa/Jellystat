@@ -9,7 +9,8 @@
     "SETTINGS": "Settings",
     "ABOUT": "About",
     "LOGOUT": "Logout",
-    "TIMELINE": "Timeline"
+    "TIMELINE": "Timeline",
+    "UNWATCHED": "Unwatched"
   },
   "HOME_PAGE": {
     "SESSIONS": "Sessions",
@@ -353,5 +354,12 @@
   "X_ROWS_SELECTED": "{ROWS} Rows Selected",
   "TRANSCODE_REASONS": "Transcode Reasons",
   "SUBTITLES": "Subtitles",
-  "GENRES": "Genres"
+  "GENRES": "Genres",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Unwatched Content",
+    "MOVIES": "Movies",
+    "SERIES": "Series",
+    "ALL_LIBRARIES": "All Libraries",
+    "EMPTY": "No unwatched content found."
+  }
 }

@@ -9,7 +9,8 @@
     "SETTINGS": "Paramètres",
     "ABOUT": "À propos",
     "LOGOUT": "Déconnexion",
-    "TIMELINE": "Fil chronologie"
+    "TIMELINE": "Fil chronologie",
+    "UNWATCHED": "Non vu"
   },
   "HOME_PAGE": {
     "SESSIONS": "Lecture(s)",
@@ -344,5 +345,12 @@
   "X_ROWS_SELECTED": "{ROWS} Ligne(s) sélectionnée(s)",
   "TRANSCODE_REASONS": "Raisons du transcodage",
   "SUBTITLES": "Sous-titres",
-  "GENRES": "Genres"
+  "GENRES": "Genres",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Contenu non vu",
+    "MOVIES": "Films",
+    "SERIES": "Séries",
+    "ALL_LIBRARIES": "Toutes les médiathèques",
+    "EMPTY": "Aucun contenu non vu trouvé."
+  }
 }
