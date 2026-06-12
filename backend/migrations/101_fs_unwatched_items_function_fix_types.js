@@ -38,16 +38,7 @@ AS $BODY$
           AND (libraryid IS NULL OR i."ParentId" = libraryid)
           AND NOT EXISTS (
             SELECT 1 FROM jf_playback_activity a
-            WHERE
-              CASE
-                WHEN itemtype = 'Movie' THEN a."NowPlayingItemId" = i."Id"
-                WHEN itemtype = 'Series' THEN EXISTS (
-                  SELECT 1 FROM jf_library_episodes e
-                  WHERE e."SeriesId" = i."Id"
-                    AND e."EpisodeId" = a."NowPlayingItemId"
-                )
-                ELSE FALSE
-              END
+            WHERE a."NowPlayingItemId" = i."Id"
           )
         ORDER BY i."DateCreated" DESC;
     END;

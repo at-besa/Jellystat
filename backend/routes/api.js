@@ -1917,6 +1917,41 @@ router.get("/stopTask", async (req, res) => {
   }
 });
 
+router.get("/genreAliases", async (req, res) => {
+  try {
+    const { rows } = await db.query(`SELECT alias, canonical FROM jf_genre_aliases ORDER BY lower(alias) ASC`);
+    res.send(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
+router.post("/genreAliases", async (req, res) => {
+  try {
+    const { alias, canonical } = req.body;
+    if (!alias || !canonical) return res.status(400).send("alias and canonical are required");
+    await db.query(`INSERT INTO jf_genre_aliases (alias, canonical) VALUES ($1, $2) ON CONFLICT (alias) DO UPDATE SET canonical = $2`, [alias.trim(), canonical.trim()]);
+    const { rows } = await db.query(`SELECT alias, canonical FROM jf_genre_aliases ORDER BY lower(alias) ASC`);
+    res.send(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
+router.delete("/genreAliases", async (req, res) => {
+  try {
+    const { alias } = req.body;
+    if (!alias) return res.status(400).send("alias is required");
+    await db.query(`DELETE FROM jf_genre_aliases WHERE alias = $1`, [alias]);
+    res.send("Alias deleted");
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
 // Handle other routes
 router.use((req, res) => {
   res.status(404).send({ error: "Not Found" });

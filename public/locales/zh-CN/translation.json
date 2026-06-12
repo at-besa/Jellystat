@@ -130,6 +130,7 @@
     "NO_BACKUPS": "未找到备份",
     "NO_LOGS": "未找到日志",
     "NO_API_KEYS": "未找到密钥",
+    "NO_ALIASES": "未找到别名",
     "NETWORK_ERROR": "无法连接到 Jellyfin 服务器",
     "INVALID_LOGIN": "用户名或密码无效",
     "INVALID_URL": "错误 {STATUS}: 未找到请求的 URL",
@@ -214,7 +215,12 @@
     },
     "SELECT_LIBRARIES_TO_IMPORT": "选择要导入的媒体库",
     "SELECT_LIBRARIES_TO_IMPORT_TOOLTIP": "这些媒体库中的项目活动仍然被追踪——即使它们没有被导入",
-    "DATE_ADDED": "添加日期"
+    "DATE_ADDED": "添加日期",
+    "GENRE_ALIASES": "分类别名",
+    "ALIAS": "别名",
+    "CANONICAL_GENRE": "标准分类",
+    "ADD_ALIAS": "添加别名",
+    "ALIAS_REQUIRED": "别名和标准分类为必填项"
   },
   "TASK_TYPE": {
     "JOB": "工作",

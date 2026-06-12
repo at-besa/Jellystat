@@ -130,6 +130,7 @@
     "NO_BACKUPS": "No s'han trobat còpies de seguretat",
     "NO_LOGS": "No s'han trobat registres",
     "NO_API_KEYS": "No s'han trobat claus d'API",
+    "NO_ALIASES": "No s'han trobat àlies",
     "NETWORK_ERROR": "No s'ha pogut connectar amb el servidor de Jellyfin",
     "INVALID_LOGIN": "Usuari o contrasenya no vàlids",
     "INVALID_URL": "Error {STATUS}: no s'ha trobat l'URL sol·licitat.",
@@ -214,7 +215,12 @@
     },
     "SELECT_LIBRARIES_TO_IMPORT": "Seleccionar Biblioteques per Importar",
     "SELECT_LIBRARIES_TO_IMPORT_TOOLTIP": "L'activitat dels elements d'aquestes biblioteques segueix monitoriztat - Encara que no s'importin.",
-    "DATE_ADDED": "Dades afegides"
+    "DATE_ADDED": "Dades afegides",
+    "GENRE_ALIASES": "Àlies de gènere",
+    "ALIAS": "Àlies",
+    "CANONICAL_GENRE": "Gènere canònic",
+    "ADD_ALIAS": "Afegir àlies",
+    "ALIAS_REQUIRED": "Cal indicar l'àlies i el gènere canònic"
   },
   "TASK_TYPE": {
     "JOB": "Tasca",

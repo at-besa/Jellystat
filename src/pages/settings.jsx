@@ -8,6 +8,7 @@ import ApiKeys from "./components/settings/apiKeys";
 import WebhooksSettings from "./components/settings/webhooks";
 import LibrarySelector from "./library_selector";
 import ActivityMonitorSettings from "./components/settings/ActivityMonitorSettings";
+import GenreAliases from "./components/settings/genreAliases";
 
 import Logs from "./components/settings/logs";
 
@@ -64,6 +65,15 @@ export default function Settings() {
         >
             <WebhooksSettings />
         </Tab> */}
+
+        <Tab
+          eventKey="tabGenreAliases"
+          className="bg-transparent my-2"
+          title={<Trans i18nKey={"SETTINGS_PAGE.GENRE_ALIASES"} />}
+          style={{ minHeight: "500px" }}
+        >
+          <GenreAliases />
+        </Tab>
 
         <Tab
           eventKey="tabBackup"

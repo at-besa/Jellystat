@@ -740,7 +740,7 @@ router.get("/getGenreUserStats", async (req, res) => {
 
     const values = [];
     const query = {
-      select: ["COALESCE(g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
+      select: ["COALESCE(al.canonical, g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
       table: "jf_playback_activity_with_metadata",
       alias: "a",
       joins: [
@@ -754,9 +754,9 @@ router.get("/getGenreUserStats", async (req, res) => {
           type: "left",
           table: `
                   LATERAL (
-                    SELECT 
+                    SELECT
                       jsonb_array_elements_text(
-                        CASE 
+                        CASE
                           WHEN jsonb_array_length(COALESCE(i."Genres", '[]'::jsonb)) = 0 THEN '["No Genre"]'::jsonb
                           ELSE i."Genres"
                         END
@@ -766,10 +766,16 @@ router.get("/getGenreUserStats", async (req, res) => {
           alias: "g",
           conditions: [{ first: 1, operator: "=", value: 1, wrap: false }],
         },
+        {
+          type: "left",
+          table: "jf_genre_aliases",
+          alias: "al",
+          conditions: [{ first: "lower(al.alias)", operator: "=", value: "lower(g.genre)", wrap: false }],
+        },
       ],
 
       where: [[{ column: "a.UserId", operator: "=", value: `$${values.length + 1}` }]],
-      group_by: [`COALESCE(g.genre, 'No Genre')`],
+      group_by: [`COALESCE(al.canonical, g.genre, 'No Genre')`],
       order_by: "genre",
       sort_order: "asc",
       pageNumber: page,
@@ -804,7 +810,7 @@ router.get("/getGenreLibraryStats", async (req, res) => {
 
     const values = [];
     const query = {
-      select: ["COALESCE(g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
+      select: ["COALESCE(al.canonical, g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
       table: "jf_playback_activity_with_metadata",
       alias: "a",
       joins: [
@@ -818,9 +824,9 @@ router.get("/getGenreLibraryStats", async (req, res) => {
           type: "left",
           table: `
                   LATERAL (
-                    SELECT 
+                    SELECT
                       jsonb_array_elements_text(
-                        CASE 
+                        CASE
                           WHEN jsonb_array_length(COALESCE(i."Genres", '[]'::jsonb)) = 0 THEN '["No Genre"]'::jsonb
                           ELSE i."Genres"
                         END
@@ -830,10 +836,16 @@ router.get("/getGenreLibraryStats", async (req, res) => {
           alias: "g",
           conditions: [{ first: 1, operator: "=", value: 1, wrap: false }],
         },
+        {
+          type: "left",
+          table: "jf_genre_aliases",
+          alias: "al",
+          conditions: [{ first: "lower(al.alias)", operator: "=", value: "lower(g.genre)", wrap: false }],
+        },
       ],
 
       where: [[{ column: "a.ParentId", operator: "=", value: `$${values.length + 1}` }]],
-      group_by: [`COALESCE(g.genre, 'No Genre')`],
+      group_by: [`COALESCE(al.canonical, g.genre, 'No Genre')`],
       order_by: "genre",
       sort_order: "asc",
       pageNumber: page,

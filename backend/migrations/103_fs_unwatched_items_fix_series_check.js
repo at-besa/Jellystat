@@ -54,9 +54,7 @@ ALTER FUNCTION public.fs_unwatched_items(text, text)
 
 exports.down = async function (knex) {
   try {
-    await knex.schema.raw(`
-      DROP FUNCTION IF EXISTS public.fs_unwatched_items(text, text);
-    `);
+    await knex.schema.raw(`DROP FUNCTION IF EXISTS public.fs_unwatched_items(text, text);`);
   } catch (error) {
     console.error(error);
   }

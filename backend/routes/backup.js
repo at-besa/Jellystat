@@ -203,6 +203,7 @@ router.get("/restore/:filename", async (req, res) => {
 router.get("/files", (req, res) => {
   try {
     const directoryPath = path.join(__dirname, "..", backupfolder);
+    fs.mkdirSync(directoryPath, { recursive: true });
     fs.readdir(directoryPath, (err, files) => {
       if (err) {
         res.status(500).send("Unable to read directory");
@@ -256,7 +257,9 @@ router.delete("/files/:filename", (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "..", backupfolder)); // Set the destination folder for uploaded files
+    const dest = path.join(__dirname, "..", backupfolder);
+    fs.mkdirSync(dest, { recursive: true });
+    cb(null, dest);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname); // Set the file name

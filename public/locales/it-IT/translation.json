@@ -126,6 +126,7 @@
     "NO_BACKUPS": "Nessun backup trovato",
     "NO_LOGS": "Nessun log trovato",
     "NO_API_KEYS": "Nessuna chiave trovata",
+    "NO_ALIASES": "Nessun alias trovato",
     "NETWORK_ERROR": "Impossibile connettersi al server Jellyfin",
     "INVALID_LOGIN": "Nome utente o password non validi",
     "INVALID_URL": "Errore {STATUS}: L'URL richiesto non è stato trovato.",
@@ -210,7 +211,12 @@
     },
     "SELECT_LIBRARIES_TO_IMPORT": "Seleziona librerie da importare",
     "SELECT_LIBRARIES_TO_IMPORT_TOOLTIP": "L'attività per gli elementi in queste librerie viene ancora tracciata, anche se non importata.",
-    "DATE_ADDED": "Data aggiunta"
+    "DATE_ADDED": "Data aggiunta",
+    "GENRE_ALIASES": "Alias genere",
+    "ALIAS": "Alias",
+    "CANONICAL_GENRE": "Genere canonico",
+    "ADD_ALIAS": "Aggiungi alias",
+    "ALIAS_REQUIRED": "Alias e genere canonico sono obbligatori"
   },
   "TASK_TYPE": {
     "JOB": "Attività",
