@@ -9,7 +9,8 @@
     "SETTINGS": "Paramètres",
     "ABOUT": "À propos",
     "LOGOUT": "Déconnexion",
-    "TIMELINE": "Fil chronologie"
+    "TIMELINE": "Fil chronologie",
+    "UNWATCHED": "Non vu"
   },
   "HOME_PAGE": {
     "SESSIONS": "Lecture(s)",
@@ -129,6 +130,7 @@
     "NO_BACKUPS": "Aucune sauvegarde trouvée",
     "NO_LOGS": "Aucun journaux trouvés",
     "NO_API_KEYS": "Aucune clés API trouvées",
+    "NO_ALIASES": "Aucun alias trouvé",
     "NETWORK_ERROR": "Impossible de se connecter au serveur Jellyfin",
     "INVALID_LOGIN": "Nom d'utilisateur ou mot de passe incorrect",
     "INVALID_URL": "Erreur {STATUS}: L'URL demandée n'a pas été trouvée.",
@@ -243,6 +245,11 @@
     "SELECT_LIBRARIES_TO_IMPORT": "Sélectionner les médiathèques à importer",
     "SELECT_LIBRARIES_TO_IMPORT_TOOLTIP": "L'activité du contenu de ces médiathèques est toujours suivie, même s'ils ne sont pas importés.",
     "DATE_ADDED": "Date d'ajout",
+    "GENRE_ALIASES": "Alias de genre",
+    "ALIAS": "Alias",
+    "CANONICAL_GENRE": "Genre canonique",
+    "ADD_ALIAS": "Ajouter un alias",
+    "ALIAS_REQUIRED": "L'alias et le genre canonique sont requis",
     "WEBHOOKS": "Webhooks",
     "WEBHOOK_TYPE": "Type de webhook",
     "TEST_NOW": "Tester maintenant",
@@ -362,5 +369,12 @@
   "X_ROWS_SELECTED": "{ROWS} Ligne(s) sélectionnée(s)",
   "TRANSCODE_REASONS": "Raisons du transcodage",
   "SUBTITLES": "Sous-titres",
-  "GENRES": "Genres"
+  "GENRES": "Genres",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Contenu non vu",
+    "MOVIES": "Films",
+    "SERIES": "Séries",
+    "ALL_LIBRARIES": "Toutes les médiathèques",
+    "EMPTY": "Aucun contenu non vu trouvé."
+  }
 }

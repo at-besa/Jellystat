@@ -740,7 +740,7 @@ router.get("/getGenreUserStats", async (req, res) => {
 
     const values = [];
     const query = {
-      select: ["COALESCE(g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
+      select: ["COALESCE(al.canonical, g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
       table: "jf_playback_activity_with_metadata",
       alias: "a",
       joins: [
@@ -754,9 +754,9 @@ router.get("/getGenreUserStats", async (req, res) => {
           type: "left",
           table: `
                   LATERAL (
-                    SELECT 
+                    SELECT
                       jsonb_array_elements_text(
-                        CASE 
+                        CASE
                           WHEN jsonb_array_length(COALESCE(i."Genres", '[]'::jsonb)) = 0 THEN '["No Genre"]'::jsonb
                           ELSE i."Genres"
                         END
@@ -766,10 +766,16 @@ router.get("/getGenreUserStats", async (req, res) => {
           alias: "g",
           conditions: [{ first: 1, operator: "=", value: 1, wrap: false }],
         },
+        {
+          type: "left",
+          table: "jf_genre_aliases",
+          alias: "al",
+          conditions: [{ first: "lower(al.alias)", operator: "=", value: "lower(g.genre)", wrap: false }],
+        },
       ],
 
       where: [[{ column: "a.UserId", operator: "=", value: `$${values.length + 1}` }]],
-      group_by: [`COALESCE(g.genre, 'No Genre')`],
+      group_by: [`COALESCE(al.canonical, g.genre, 'No Genre')`],
       order_by: "genre",
       sort_order: "asc",
       pageNumber: page,
@@ -804,7 +810,7 @@ router.get("/getGenreLibraryStats", async (req, res) => {
 
     const values = [];
     const query = {
-      select: ["COALESCE(g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
+      select: ["COALESCE(al.canonical, g.genre, 'No Genre') AS genre", `SUM(a."PlaybackDuration") AS duration`, "COUNT(*) AS plays"],
       table: "jf_playback_activity_with_metadata",
       alias: "a",
       joins: [
@@ -818,9 +824,9 @@ router.get("/getGenreLibraryStats", async (req, res) => {
           type: "left",
           table: `
                   LATERAL (
-                    SELECT 
+                    SELECT
                       jsonb_array_elements_text(
-                        CASE 
+                        CASE
                           WHEN jsonb_array_length(COALESCE(i."Genres", '[]'::jsonb)) = 0 THEN '["No Genre"]'::jsonb
                           ELSE i."Genres"
                         END
@@ -830,10 +836,16 @@ router.get("/getGenreLibraryStats", async (req, res) => {
           alias: "g",
           conditions: [{ first: 1, operator: "=", value: 1, wrap: false }],
         },
+        {
+          type: "left",
+          table: "jf_genre_aliases",
+          alias: "al",
+          conditions: [{ first: "lower(al.alias)", operator: "=", value: "lower(g.genre)", wrap: false }],
+        },
       ],
 
       where: [[{ column: "a.ParentId", operator: "=", value: `$${values.length + 1}` }]],
-      group_by: [`COALESCE(g.genre, 'No Genre')`],
+      group_by: [`COALESCE(al.canonical, g.genre, 'No Genre')`],
       order_by: "genre",
       sort_order: "asc",
       pageNumber: page,
@@ -853,6 +865,33 @@ router.get("/getGenreLibraryStats", async (req, res) => {
     console.log(error);
     res.status(503);
     res.send(error);
+  }
+});
+
+router.get("/getUnwatchedItems", async (req, res) => {
+  try {
+    const { type = "Movie", libraryid, page = 1, size = 24 } = req.query;
+    const valid_types = ["Movie", "Series"];
+
+    if (!valid_types.includes(type)) {
+      return res.status(400).send(`Invalid Type. Valid: ${JSON.stringify(valid_types)}`);
+    }
+
+    const _page = parseInt(page);
+    const _size = parseInt(size);
+    const offset = (_page - 1) * _size;
+    const lid = libraryid || null;
+
+    const { rows: countRows } = await db.query(`SELECT COUNT(*) FROM fs_unwatched_items($1, $2)`, [type, lid]);
+    const total = parseInt(countRows[0].count);
+    const pages = Math.ceil(total / _size);
+
+    const { rows } = await db.query(`SELECT * FROM fs_unwatched_items($1, $2) LIMIT $3 OFFSET $4`, [type, lid, _size, offset]);
+
+    res.send({ current_page: _page, pages, size: _size, total, results: rows });
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
   }
 });
 

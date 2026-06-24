@@ -9,7 +9,8 @@
     "SETTINGS": "Einstellungen",
     "ABOUT": "Über",
     "LOGOUT": "Abmelden",
-    "TIMELINE": "Zeitleiste"
+    "TIMELINE": "Zeitleiste",
+    "UNWATCHED": "Ungesehen"
   },
   "HOME_PAGE": {
     "SESSIONS": "Sitzungen",
@@ -129,6 +130,7 @@
     "NO_BACKUPS": "Keine Sicherungen gefunden",
     "NO_LOGS": "Keine Protokolle gefunden",
     "NO_API_KEYS": "Kein API-Schlüssel gefunden",
+    "NO_ALIASES": "Keine Aliasse gefunden",
     "NETWORK_ERROR": "Verbindung zum Jellyfin-Server nicht möglich",
     "INVALID_LOGIN": "Ungültiger Benutzername oder Passwort",
     "INVALID_URL": "Fehler {STATUS}: Die angeforderte URL wurde nicht gefunden.",
@@ -248,6 +250,11 @@
     "SELECT_LIBRARIES_TO_IMPORT": "Zu importierende Bibliotheken auswählen",
     "SELECT_LIBRARIES_TO_IMPORT_TOOLTIP": "Aktivitäten für Elemente innerhalb dieser Bibliotheken werden weiterhin verfolgt - auch wenn sie nicht importiert wurden.",
     "DATE_ADDED": "Hinzugefügt am",
+    "GENRE_ALIASES": "Genre-Aliasse",
+    "ALIAS": "Alias",
+    "CANONICAL_GENRE": "Kanonischer Genre-Name",
+    "ADD_ALIAS": "Alias hinzufügen",
+    "ALIAS_REQUIRED": "Alias und kanonischer Genre-Name sind erforderlich",
     "WEBHOOKS": "Webhooks",
     "WEBHOOK_TYPE": "Webhook-Typ",
     "WEBHOOK_TYPES": {
@@ -371,5 +378,12 @@
   "X_ROWS_SELECTED": "{ROWS} Zeilen ausgewählt",
   "TRANSCODE_REASONS": "Transkodierungsgründe",
   "SUBTITLES": "Untertitel",
-  "GENRES": "Genres"
+  "GENRES": "Genres",
+  "UNWATCHED_PAGE": {
+    "TITLE": "Ungesehene Inhalte",
+    "MOVIES": "Filme",
+    "SERIES": "Serien",
+    "ALL_LIBRARIES": "Alle Bibliotheken",
+    "EMPTY": "Keine ungesehenen Inhalte gefunden."
+  }
 }
