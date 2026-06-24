@@ -1,6 +1,6 @@
 {
   "name": "jfstat",
-  "version": "1.1.10",
+  "version": "1.1.12-beta",
   "private": true,
   "main": "src/index.jsx",
   "scripts": {
