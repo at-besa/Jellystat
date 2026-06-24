@@ -26,7 +26,8 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY --from=builder /app .
-COPY --chmod=755 entry.sh /entry.sh
+COPY entry.sh /entry.sh
+RUN sed -i 's/\r$//' /entry.sh && chmod 755 /entry.sh
 
 HEALTHCHECK --interval=30s \
             --timeout=5s \
