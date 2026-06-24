@@ -35,7 +35,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            besa/jellystat:latest
-            besa/jellystat:${{ steps.pkg.outputs.version }}
+            atbesa/jellystat:latest
+            atbesa/jellystat:${{ steps.pkg.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
