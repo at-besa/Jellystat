@@ -6,6 +6,11 @@ import "./css/stats.css";
 import DailyPlayStats from "./components/statistics/daily-play-count";
 import PlayStatsByDay from "./components/statistics/play-stats-by-day";
 import PlayStatsByHour from "./components/statistics/play-stats-by-hour";
+import TranscodeRatio from "./components/statistics/transcode-ratio";
+import ContentTypeBreakdown from "./components/statistics/content-type-breakdown";
+import TopClients from "./components/statistics/top-clients";
+import TopContent from "./components/statistics/top-content";
+import ActivityHeatmap from "./components/statistics/activity-heatmap";
 import { Trans } from "react-i18next";
 
 function Statistics() {
@@ -61,13 +66,27 @@ function Statistics() {
             <Tab
               eventKey="tabCount"
               className="bg-transparent"
-              title={<Trans i18nKey="STAT_PAGE.COUNT_VIEW" />} 
+              title={<Trans i18nKey="STAT_PAGE.COUNT_VIEW" />}
             />
-          
             <Tab
               eventKey="tabDuration"
               className="bg-transparent"
               title={<Trans i18nKey="STAT_PAGE.DURATION_VIEW" />}
+            />
+            <Tab
+              eventKey="tabBreakdown"
+              className="bg-transparent"
+              title={<Trans i18nKey="STAT_PAGE.TAB_BREAKDOWN" />}
+            />
+            <Tab
+              eventKey="tabTopContent"
+              className="bg-transparent"
+              title={<Trans i18nKey="STAT_PAGE.TAB_TOP_CONTENT" />}
+            />
+            <Tab
+              eventKey="tabHeatmap"
+              className="bg-transparent"
+              title={<Trans i18nKey="STAT_PAGE.TAB_HEATMAP" />}
             />
           </Tabs>
         </div>
@@ -102,6 +121,22 @@ function Statistics() {
             <PlayStatsByHour days={days} viewName="duration" />
           </div>
         </div>
+      )}
+
+      {activeTab === "tabBreakdown" && (
+        <div className="statistics-graphs">
+          <TranscodeRatio days={days} />
+          <ContentTypeBreakdown days={days} />
+          <TopClients days={days} />
+        </div>
+      )}
+
+      {activeTab === "tabTopContent" && (
+        <TopContent days={days} />
+      )}
+
+      {activeTab === "tabHeatmap" && (
+        <ActivityHeatmap days={days} />
       )}
     </div>
   );

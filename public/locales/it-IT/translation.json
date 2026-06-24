@@ -163,7 +163,25 @@
   "STAT_PAGE": {
     "STATISTICS": "Statistiche",
     "DAILY_PLAY_PER_LIBRARY": "Numero di riproduzioni giornaliere per libreria",
-    "PLAY_COUNT_BY": "Conteggio riproduzioni per"
+    "PLAY_COUNT_BY": "Conteggio riproduzioni per",
+    "TRANSCODE_RATIO": "Metodo di riproduzione",
+    "TOP_CONTENT": "Contenuti più visti",
+    "TOP_CLIENTS": "Client più usati",
+    "CONTENT_TYPE": "Tipi di contenuto",
+    "ACTIVITY_HEATMAP": "Mappa di attività",
+    "TAB_BREAKDOWN": "Panoramica",
+    "TAB_TOP_CONTENT": "Top contenuti",
+    "TAB_HEATMAP": "Mappa di calore",
+    "TYPE_MOVIE": "Film",
+    "TYPE_SERIES": "Serie",
+    "TYPE_AUDIO": "Audio",
+    "WEEKDAY_SUN": "Dom",
+    "WEEKDAY_MON": "Lun",
+    "WEEKDAY_TUE": "Mar",
+    "WEEKDAY_WED": "Mer",
+    "WEEKDAY_THU": "Gio",
+    "WEEKDAY_FRI": "Ven",
+    "WEEKDAY_SAT": "Sab"
   },
   "SETTINGS_PAGE": {
     "SETTINGS": "Impostazioni",

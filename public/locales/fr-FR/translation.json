@@ -167,7 +167,25 @@
   "STAT_PAGE": {
     "STATISTICS": "Statistiques",
     "DAILY_PLAY_PER_LIBRARY": "Nombre de lecture quotidiennes par médiathèque",
-    "PLAY_COUNT_BY": "Nombre de lecture par"
+    "PLAY_COUNT_BY": "Nombre de lecture par",
+    "TRANSCODE_RATIO": "Méthode de lecture",
+    "TOP_CONTENT": "Contenus populaires",
+    "TOP_CLIENTS": "Clients les plus utilisés",
+    "CONTENT_TYPE": "Répartition par type",
+    "ACTIVITY_HEATMAP": "Carte d'activité",
+    "TAB_BREAKDOWN": "Répartition",
+    "TAB_TOP_CONTENT": "Top contenus",
+    "TAB_HEATMAP": "Carte de chaleur",
+    "TYPE_MOVIE": "Films",
+    "TYPE_SERIES": "Séries",
+    "TYPE_AUDIO": "Audio",
+    "WEEKDAY_SUN": "Dim",
+    "WEEKDAY_MON": "Lun",
+    "WEEKDAY_TUE": "Mar",
+    "WEEKDAY_WED": "Mer",
+    "WEEKDAY_THU": "Jeu",
+    "WEEKDAY_FRI": "Ven",
+    "WEEKDAY_SAT": "Sam"
   },
   "SETTINGS_PAGE": {
     "SETTINGS": "Paramètres",

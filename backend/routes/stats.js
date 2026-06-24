@@ -856,6 +856,27 @@ router.get("/getGenreLibraryStats", async (req, res) => {
   }
 });
 
+router.get("/getActivityHeatmap", async (req, res) => {
+  try {
+    const { days = 30 } = req.query;
+    const { rows } = await db.query(
+      `SELECT
+        EXTRACT(DOW FROM "ActivityDateInserted")::int AS day_of_week,
+        EXTRACT(HOUR FROM "ActivityDateInserted")::int AS hour,
+        COUNT(*)::int AS count
+      FROM jf_playback_activity
+      WHERE "ActivityDateInserted" >= NOW() - CAST($1 || ' days' AS INTERVAL)
+      GROUP BY day_of_week, hour
+      ORDER BY day_of_week, hour`,
+      [days]
+    );
+    res.send(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
 // Handle other routes
 router.use((req, res) => {
   res.status(404).send({ error: "Not Found" });

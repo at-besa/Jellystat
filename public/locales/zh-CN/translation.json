@@ -167,7 +167,25 @@
   "STAT_PAGE": {
     "STATISTICS": "统计",
     "DAILY_PLAY_PER_LIBRARY": "媒体库每日播放次数",
-    "PLAY_COUNT_BY": "播放计数："
+    "PLAY_COUNT_BY": "播放计数：",
+    "TRANSCODE_RATIO": "播放方式",
+    "TOP_CONTENT": "热门内容",
+    "TOP_CLIENTS": "常用客户端",
+    "CONTENT_TYPE": "内容类型分布",
+    "ACTIVITY_HEATMAP": "活动热力图",
+    "TAB_BREAKDOWN": "概览",
+    "TAB_TOP_CONTENT": "热门内容",
+    "TAB_HEATMAP": "热力图",
+    "TYPE_MOVIE": "电影",
+    "TYPE_SERIES": "剧集",
+    "TYPE_AUDIO": "音乐",
+    "WEEKDAY_SUN": "周日",
+    "WEEKDAY_MON": "周一",
+    "WEEKDAY_TUE": "周二",
+    "WEEKDAY_WED": "周三",
+    "WEEKDAY_THU": "周四",
+    "WEEKDAY_FRI": "周五",
+    "WEEKDAY_SAT": "周六"
   },
   "SETTINGS_PAGE": {
     "SETTINGS": "设置",
