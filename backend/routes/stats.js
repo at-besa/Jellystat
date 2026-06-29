@@ -895,6 +895,237 @@ router.get("/getUnwatchedItems", async (req, res) => {
   }
 });
 
+router.get("/getDiscoveryDelay", async (req, res) => {
+  try {
+    const { type = "Movie" } = req.query;
+    const valid_types = ["Movie", "Series"];
+    if (!valid_types.includes(type)) {
+      return res.status(400).send(`Invalid type. Valid: ${JSON.stringify(valid_types)}`);
+    }
+
+    const { rows: buckets } = await db.query(
+      `WITH first_plays AS (
+        SELECT "NowPlayingItemId", MIN("ActivityDateInserted") AS first_played
+        FROM jf_playback_activity GROUP BY "NowPlayingItemId"
+      ),
+      delays AS (
+        SELECT GREATEST(0, EXTRACT(DAYS FROM (fp.first_played - i."DateCreated")))::int AS delay
+        FROM jf_library_items i
+        JOIN first_plays fp ON fp."NowPlayingItemId" = i."Id"
+        WHERE i."Type" = $1 AND i.archived = false AND fp.first_played > i."DateCreated"
+      )
+      SELECT
+        CASE
+          WHEN delay < 1   THEN 'same_day'
+          WHEN delay < 7   THEN '1_week'
+          WHEN delay < 30  THEN '1_month'
+          WHEN delay < 90  THEN '3_months'
+          WHEN delay < 365 THEN '1_year'
+          ELSE '1_year_plus'
+        END AS bucket,
+        COUNT(*)::int AS count
+      FROM delays GROUP BY bucket`,
+      [type]
+    );
+
+    const { rows: neverRows } = await db.query(
+      `SELECT COUNT(*)::int AS count FROM jf_library_items i
+       WHERE i."Type" = $1 AND i.archived = false
+         AND NOT EXISTS (
+           SELECT 1 FROM jf_playback_activity a WHERE a."NowPlayingItemId" = i."Id"
+         )`,
+      [type]
+    );
+
+    const ORDER = ["same_day", "1_week", "1_month", "3_months", "1_year", "1_year_plus", "never"];
+    const map = Object.fromEntries(buckets.map((r) => [r.bucket, r.count]));
+    map.never = neverRows[0].count;
+
+    const result = ORDER.map((bucket) => ({ bucket, count: map[bucket] ?? 0 }));
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
+router.get("/getGenreEvolution", async (req, res) => {
+  try {
+    const days = parseInt(req.query.days) || 365;
+
+    // Auto-pick granularity for ~24 buckets:
+    // ≤30d → daily (max 30), ≤168d → weekly (max 24), else → monthly
+    const granularity = days <= 30 ? "day" : days <= 168 ? "week" : "month";
+    const labelFormat = granularity === "month" ? "Mon YY" : "DD.Mon";
+
+    const { rows } = await db.query(
+      `SELECT
+        TO_CHAR(DATE_TRUNC('${granularity}', a."ActivityDateInserted"), '${labelFormat}') AS month,
+        DATE_TRUNC('${granularity}', a."ActivityDateInserted") AS month_ts,
+        COALESCE(al.canonical, g.genre) AS genre,
+        ROUND(SUM(LEAST(a."PlaybackDuration", 86400)) / 3600.0, 1)::float AS hours
+      FROM jf_playback_activity a
+      JOIN jf_library_items i ON i."Id" = a."NowPlayingItemId"
+      CROSS JOIN LATERAL jsonb_array_elements_text(
+        CASE WHEN jsonb_array_length(COALESCE(i."Genres", '[]'::jsonb)) = 0
+          THEN '["Other"]'::jsonb ELSE i."Genres" END
+      ) AS g(genre)
+      LEFT JOIN jf_genre_aliases al ON lower(al.alias) = lower(g.genre)
+      WHERE a."ActivityDateInserted" >= NOW() - ($1 || ' days')::interval
+        AND i."Type" IN ('Movie', 'Series')
+        AND i.archived = false
+        AND a."PlaybackDuration" BETWEEN 60 AND 86400
+      GROUP BY DATE_TRUNC('${granularity}', a."ActivityDateInserted"), COALESCE(al.canonical, g.genre)
+      ORDER BY month_ts, hours DESC`,
+      [days]
+    );
+
+    const genreTotals = {};
+    rows.forEach(({ genre, hours }) => {
+      genreTotals[genre] = (genreTotals[genre] ?? 0) + hours;
+    });
+    const topGenres = Object.entries(genreTotals)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([g]) => g);
+
+    const bucketMap = {};
+    rows.forEach(({ month, month_ts, genre, hours }) => {
+      if (!topGenres.includes(genre)) return;
+      if (!bucketMap[month]) bucketMap[month] = { month, month_ts };
+      bucketMap[month][genre] = hours;
+    });
+
+    const data = Object.values(bucketMap)
+      .sort((a, b) => new Date(a.month_ts) - new Date(b.month_ts))
+      .map((bucket) => {
+        topGenres.forEach((g) => { if (bucket[g] == null) bucket[g] = 0; });
+        return bucket;
+      });
+    res.send({ genres: topGenres, data, granularity });
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
+router.get("/getBingeSessions", async (req, res) => {
+  try {
+    const { days = 30, minItems = 3, allTime } = req.query;
+    const dateFilter = allTime === "true"
+      ? ""
+      : `AND "ActivityDateInserted" >= NOW() - MAKE_INTERVAL(days => ${parseInt(days)}::int)`;
+
+    const { rows } = await db.query(
+      `WITH activity_with_end AS (
+        SELECT
+          "UserId", "UserName",
+          COALESCE("SeriesName", "NowPlayingItemName") AS title,
+          "ActivityDateInserted" AS start_time,
+          "ActivityDateInserted" + MAKE_INTERVAL(secs => COALESCE("PlaybackDuration", 0)) AS end_time
+        FROM jf_playback_activity
+        WHERE "PlaybackDuration" > 60
+          ${dateFilter}
+      ),
+      with_prev AS (
+        SELECT *,
+          LAG(end_time) OVER (PARTITION BY "UserId" ORDER BY start_time) AS prev_end
+        FROM activity_with_end
+      ),
+      with_session_id AS (
+        SELECT *,
+          SUM(CASE
+            WHEN prev_end IS NULL THEN 1
+            WHEN start_time > prev_end + INTERVAL '45 minutes' THEN 1
+            ELSE 0
+          END) OVER (PARTITION BY "UserId" ORDER BY start_time ROWS UNBOUNDED PRECEDING) AS session_id
+        FROM with_prev
+      ),
+      sessions AS (
+        SELECT
+          "UserId", "UserName", session_id,
+          MIN(start_time) AS session_start,
+          MAX(end_time) AS session_end,
+          COUNT(*)::int AS items_count,
+          EXTRACT(EPOCH FROM (MAX(end_time) - MIN(start_time)))::int AS span_seconds,
+          SUM(EXTRACT(EPOCH FROM (end_time - start_time)))::int AS play_seconds
+        FROM with_session_id
+        GROUP BY "UserId", "UserName", session_id
+        HAVING COUNT(*) >= $1::int
+      )
+      SELECT * FROM sessions ORDER BY span_seconds DESC LIMIT 25`,
+      [minItems]
+    );
+
+    res.send(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
+router.get("/getUserTimeProfile", async (req, res) => {
+  try {
+    const { days = 30 } = req.query;
+
+    const { rows } = await db.query(
+      `SELECT
+        "UserId", "UserName",
+        EXTRACT(HOUR FROM "ActivityDateInserted")::int AS hour,
+        COUNT(*)::int AS plays
+      FROM jf_playback_activity
+      WHERE "ActivityDateInserted" >= NOW() - MAKE_INTERVAL(days => $1::int)
+      GROUP BY "UserId", "UserName", hour
+      ORDER BY "UserName", hour`,
+      [days]
+    );
+
+    // Group by user
+    const users = {};
+    rows.forEach(({ UserId, UserName, hour, plays }) => {
+      if (!users[UserId]) users[UserId] = { UserId, UserName, hours: Array(24).fill(0) };
+      users[UserId].hours[hour] = plays;
+    });
+
+    res.send(Object.values(users));
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
+router.get("/getSessionItems", async (req, res) => {
+  try {
+    const { userId, sessionStart, sessionEnd } = req.query;
+    if (!userId || !sessionStart || !sessionEnd) {
+      return res.status(400).send("userId, sessionStart and sessionEnd are required");
+    }
+    const { rows } = await db.query(
+      `SELECT
+        COALESCE(a."SeriesName", a."NowPlayingItemName") AS title,
+        a."NowPlayingItemName" AS episode_name,
+        a."SeriesName",
+        a."NowPlayingItemId" AS item_id,
+        a."ActivityDateInserted" AS start_time,
+        a."PlaybackDuration" AS duration_seconds,
+        e."IndexNumber" AS episode_number,
+        e."ParentIndexNumber" AS season_number
+      FROM jf_playback_activity a
+      LEFT JOIN jf_library_episodes e ON e."EpisodeId" = a."NowPlayingItemId"
+      WHERE a."UserId" = $1
+        AND a."ActivityDateInserted" >= $2::timestamptz
+        AND a."ActivityDateInserted" <= $3::timestamptz
+        AND a."PlaybackDuration" > 60
+      ORDER BY a."ActivityDateInserted"`,
+      [userId, sessionStart, sessionEnd]
+    );
+    res.send(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(503).send(error);
+  }
+});
+
 router.get("/getActivityHeatmap", async (req, res) => {
   try {
     const { days = 30 } = req.query;

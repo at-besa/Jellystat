@@ -11,6 +11,10 @@ import ContentTypeBreakdown from "./components/statistics/content-type-breakdown
 import TopClients from "./components/statistics/top-clients";
 import TopContent from "./components/statistics/top-content";
 import ActivityHeatmap from "./components/statistics/activity-heatmap";
+import DiscoveryDelay from "./components/statistics/discovery-delay";
+import GenreEvolution from "./components/statistics/genre-evolution";
+import BingeSessions from "./components/statistics/binge-sessions";
+import NightOwl from "./components/statistics/night-owl";
 import { Trans } from "react-i18next";
 
 function Statistics() {
@@ -57,43 +61,18 @@ function Statistics() {
           <Trans i18nKey={"STAT_PAGE.STATISTICS"} />
         </h1>
         <div className="stats-tab-nav">
-          <Tabs
-            defaultActiveKey={activeTab}
-            activeKey={activeTab}
-            onSelect={setTab}
-            variant="pills"
-          >
-            <Tab
-              eventKey="tabCount"
-              className="bg-transparent"
-              title={<Trans i18nKey="STAT_PAGE.COUNT_VIEW" />}
-            />
-            <Tab
-              eventKey="tabDuration"
-              className="bg-transparent"
-              title={<Trans i18nKey="STAT_PAGE.DURATION_VIEW" />}
-            />
-            <Tab
-              eventKey="tabBreakdown"
-              className="bg-transparent"
-              title={<Trans i18nKey="STAT_PAGE.TAB_BREAKDOWN" />}
-            />
-            <Tab
-              eventKey="tabTopContent"
-              className="bg-transparent"
-              title={<Trans i18nKey="STAT_PAGE.TAB_TOP_CONTENT" />}
-            />
-            <Tab
-              eventKey="tabHeatmap"
-              className="bg-transparent"
-              title={<Trans i18nKey="STAT_PAGE.TAB_HEATMAP" />}
-            />
+          <Tabs defaultActiveKey={activeTab} activeKey={activeTab} onSelect={setTab} variant="pills">
+            <Tab eventKey="tabCount"      className="bg-transparent" title={<Trans i18nKey="STAT_PAGE.COUNT_VIEW" />} />
+            <Tab eventKey="tabDuration"   className="bg-transparent" title={<Trans i18nKey="STAT_PAGE.DURATION_VIEW" />} />
+            <Tab eventKey="tabBreakdown"  className="bg-transparent" title={<Trans i18nKey="STAT_PAGE.TAB_BREAKDOWN" />} />
+            <Tab eventKey="tabTopContent" className="bg-transparent" title={<Trans i18nKey="STAT_PAGE.TAB_TOP_CONTENT" />} />
+            <Tab eventKey="tabHeatmap"    className="bg-transparent" title={<Trans i18nKey="STAT_PAGE.TAB_HEATMAP" />} />
+            <Tab eventKey="tabTrends"     className="bg-transparent" title={<Trans i18nKey="STAT_PAGE.TAB_TRENDS" />} />
+            <Tab eventKey="tabSessions"   className="bg-transparent" title={<Trans i18nKey="STAT_PAGE.TAB_SESSIONS" />} />
           </Tabs>
         </div>
         <div className="date-range">
-          <div className="header">
-            <Trans i18nKey={"LAST"} />
-          </div>
+          <div className="header"><Trans i18nKey={"LAST"} /></div>
           <div className="days">
             <input type="number" min={1} value={input} onChange={handleOnChange} onKeyDown={handleKeyDown} />
           </div>
@@ -124,10 +103,13 @@ function Statistics() {
       )}
 
       {activeTab === "tabBreakdown" && (
-        <div className="statistics-graphs">
-          <TranscodeRatio days={days} />
-          <ContentTypeBreakdown days={days} />
-          <TopClients days={days} />
+        <div>
+          <div className="statistics-graphs">
+            <TranscodeRatio days={days} />
+            <ContentTypeBreakdown days={days} />
+            <TopClients days={days} />
+          </div>
+          <NightOwl days={days} />
         </div>
       )}
 
@@ -137,6 +119,17 @@ function Statistics() {
 
       {activeTab === "tabHeatmap" && (
         <ActivityHeatmap days={days} />
+      )}
+
+      {activeTab === "tabTrends" && (
+        <div>
+          <GenreEvolution days={days} />
+          <DiscoveryDelay days={days} />
+        </div>
+      )}
+
+      {activeTab === "tabSessions" && (
+        <BingeSessions days={days} />
       )}
     </div>
   );
