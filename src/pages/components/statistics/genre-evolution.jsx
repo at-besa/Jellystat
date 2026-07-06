@@ -9,10 +9,14 @@ const GENRE_COLORS = [
   "#e91e63", "#26c6da", "#ff5722", "#9c27b0",
 ];
 
+// Minimum fraction of period elapsed before showing a prediction (avoids 10× extrapolation on Monday morning)
+const MIN_FRACTION_FOR_PREDICTION = 0.15;
+
 function GenreEvolution({ days }) {
   const [data, setData] = useState(null);
   const [genres, setGenres] = useState([]);
   const [granularity, setGranularity] = useState("month");
+  const [fractionComplete, setFractionComplete] = useState(1);
   const [currentDays, setCurrentDays] = useState(days);
   const token = localStorage.getItem("token");
 
@@ -26,6 +30,7 @@ function GenreEvolution({ days }) {
           setGenres(resp.genres);
           setData(resp.data);
           setGranularity(resp.granularity);
+          setFractionComplete(resp.fractionComplete ?? 1);
         })
         .catch(console.log);
     };
@@ -38,21 +43,57 @@ function GenreEvolution({ days }) {
     return () => clearInterval(id);
   }, [data, days, currentDays, token]);
 
-  // Tilt labels when there are many daily/weekly buckets
   const tickAngle = granularity === "day" ? -45 : granularity === "week" ? -30 : 0;
   const bottomMargin = granularity === "day" ? 50 : granularity === "week" ? 30 : 10;
 
+  // Build chart data with optional prediction point
+  const chartData = (() => {
+    if (!data || data.length === 0) return data;
+
+    const showPrediction = fractionComplete >= MIN_FRACTION_FOR_PREDICTION && fractionComplete < 0.99;
+    if (!showPrediction) return data;
+
+    const result = data.map((b, i) => {
+      if (i < data.length - 1) return b;
+      // Last (current incomplete) bucket: add _pred keys at the same value as anchors for dashed line start
+      const bucket = { ...b };
+      genres.forEach((g) => { bucket[g + "_pred"] = bucket[g]; });
+      return bucket;
+    });
+
+    // Predicted full-period point
+    const last = data[data.length - 1];
+    const predicted = { month: "▸", month_ts: null };
+    genres.forEach((g) => {
+      predicted[g + "_pred"] = Math.round((last[g] / fractionComplete) * 10) / 10;
+    });
+    result.push(predicted);
+
+    return result;
+  })();
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
+    const isPredicted = label === "▸";
     return (
       <div style={{ backgroundColor: "rgba(0,0,0,0.85)", color: "white", borderRadius: 6, padding: "8px 12px", minWidth: 140 }}>
-        <p style={{ margin: "0 0 4px", fontWeight: "bold" }}>{label}</p>
+        <p style={{ margin: "0 0 4px", fontWeight: "bold" }}>
+          {isPredicted ? "Predicted (full period)" : label}
+        </p>
         {payload
-          .filter((p) => p.value > 0)
+          .filter((p) => p.value > 0 && !p.dataKey.endsWith("_pred"))
           .sort((a, b) => b.value - a.value)
           .map((p) => (
             <p key={p.dataKey} style={{ margin: 0, color: p.color }}>
               {p.dataKey}: {p.value}h
+            </p>
+          ))}
+        {isPredicted && payload
+          .filter((p) => p.dataKey.endsWith("_pred") && p.value > 0)
+          .sort((a, b) => b.value - a.value)
+          .map((p) => (
+            <p key={p.dataKey} style={{ margin: 0, color: p.color, opacity: 0.8 }}>
+              {p.dataKey.replace("_pred", "")}: ~{p.value}h
             </p>
           ))}
       </div>
@@ -66,12 +107,12 @@ function GenreEvolution({ days }) {
         <Trans i18nKey={`UNITS.DAY${days > 1 ? "S" : ""}`} />
       </h2>
 
-      {!data ? <></> : data.length === 0 ? (
+      {!chartData ? <></> : chartData.length === 0 ? (
         <h5><Trans i18nKey="ERROR_MESSAGES.NO_STATS" /></h5>
       ) : (
         <div className="graph">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: bottomMargin }}>
+            <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: bottomMargin }}>
               <XAxis
                 dataKey="month"
                 tick={{ fill: "white", fontSize: 12 }}
@@ -80,7 +121,11 @@ function GenreEvolution({ days }) {
               />
               <YAxis tick={{ fill: "white" }} tickFormatter={(v) => `${v}h`} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: "white" }} />
+              <Legend
+                wrapperStyle={{ color: "white" }}
+                formatter={(value) => value.endsWith("_pred") ? null : value}
+              />
+
               {genres.map((genre, i) => (
                 <Line
                   key={genre}
@@ -90,6 +135,23 @@ function GenreEvolution({ days }) {
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4 }}
+                />
+              ))}
+
+              {/* Dashed prediction lines — one per genre, only visible for last→predicted segment */}
+              {fractionComplete < 0.99 && fractionComplete >= MIN_FRACTION_FOR_PREDICTION && genres.map((genre, i) => (
+                <Line
+                  key={genre + "_pred"}
+                  type="monotone"
+                  dataKey={genre + "_pred"}
+                  stroke={GENRE_COLORS[i % GENRE_COLORS.length]}
+                  strokeWidth={2}
+                  strokeDasharray="5 4"
+                  opacity={0.65}
+                  dot={false}
+                  activeDot={{ r: 3 }}
+                  legendType="none"
+                  connectNulls={false}
                 />
               ))}
             </LineChart>

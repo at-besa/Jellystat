@@ -1002,7 +1002,23 @@ router.get("/getGenreEvolution", async (req, res) => {
         topGenres.forEach((g) => { if (bucket[g] == null) bucket[g] = 0; });
         return bucket;
       });
-    res.send({ genres: topGenres, data, granularity });
+
+    // How far through the current (last incomplete) bucket we are
+    const now = new Date();
+    let fractionComplete;
+    if (granularity === "day") {
+      fractionComplete = (now.getHours() * 60 + now.getMinutes()) / (24 * 60);
+    } else if (granularity === "week") {
+      // DATE_TRUNC('week') starts Monday; JS getDay(): 0=Sun
+      const daysSinceMonday = (now.getDay() + 6) % 7;
+      fractionComplete = (daysSinceMonday * 24 + now.getHours()) / (7 * 24);
+    } else {
+      const dayOfMonth = now.getDate();
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      fractionComplete = (dayOfMonth - 1 + now.getHours() / 24) / daysInMonth;
+    }
+
+    res.send({ genres: topGenres, data, granularity, fractionComplete: Math.max(0.01, fractionComplete) });
   } catch (error) {
     console.log(error);
     res.status(503).send(error);
