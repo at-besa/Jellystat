@@ -53,43 +53,58 @@ function GenreEvolution({ days }) {
     const showPrediction = fractionComplete >= MIN_FRACTION_FOR_PREDICTION && fractionComplete < 0.99;
     if (!showPrediction) return data;
 
+    const n = data.length;
+    const last = data[n - 1];
+    const prevLast = data[n - 2];
+
     const result = data.map((b, i) => {
-      if (i < data.length - 1) return b;
-      // Last (current incomplete) bucket: add _pred keys at the same value as anchors for dashed line start
-      const bucket = { ...b };
-      genres.forEach((g) => { bucket[g + "_pred"] = bucket[g]; });
-      return bucket;
+      if (i === n - 1) {
+        // Current incomplete bucket: null out solid values so the solid line
+        // stops at the previous bucket, keep only _pred (= predicted full value)
+        const bucket = { month: b.month, month_ts: b.month_ts };
+        genres.forEach((g) => {
+          bucket[g] = null;
+          bucket[g + "_pred"] = Math.round((b[g] / fractionComplete) * 10) / 10;
+        });
+        return bucket;
+      }
+      if (i === n - 2) {
+        // Last complete bucket: anchor for the dashed line (same value as solid)
+        const bucket = { ...b };
+        genres.forEach((g) => { bucket[g + "_pred"] = b[g]; });
+        return bucket;
+      }
+      return b;
     });
 
-    // Predicted full-period point
-    const last = data[data.length - 1];
-    const predicted = { month: "▸", month_ts: null };
-    genres.forEach((g) => {
-      predicted[g + "_pred"] = Math.round((last[g] / fractionComplete) * 10) / 10;
-    });
-    result.push(predicted);
+    // Use the last TWO complete buckets as extra context for the spline tangent
+    // (only if they exist — gives smoother curve direction into the prediction)
+    if (n >= 3 && prevLast) {
+      const prevPrev = result[n - 3];
+      genres.forEach((g) => { prevPrev[g + "_pred"] = prevPrev[g]; });
+    }
 
     return result;
   })();
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
-    const isPredicted = label === "▸";
+    const predEntries = payload.filter((p) => p.dataKey.endsWith("_pred") && p.value > 0);
+    const isPredicted = predEntries.length > 0 && payload.every((p) => p.dataKey.endsWith("_pred") || p.value == null || p.value === 0);
     return (
       <div style={{ backgroundColor: "rgba(0,0,0,0.85)", color: "white", borderRadius: 6, padding: "8px 12px", minWidth: 140 }}>
         <p style={{ margin: "0 0 4px", fontWeight: "bold" }}>
-          {isPredicted ? "Predicted (full period)" : label}
+          {isPredicted ? `${label} (predicted)` : label}
         </p>
         {payload
-          .filter((p) => p.value > 0 && !p.dataKey.endsWith("_pred"))
+          .filter((p) => !p.dataKey.endsWith("_pred") && p.value > 0)
           .sort((a, b) => b.value - a.value)
           .map((p) => (
             <p key={p.dataKey} style={{ margin: 0, color: p.color }}>
               {p.dataKey}: {p.value}h
             </p>
           ))}
-        {isPredicted && payload
-          .filter((p) => p.dataKey.endsWith("_pred") && p.value > 0)
+        {isPredicted && predEntries
           .sort((a, b) => b.value - a.value)
           .map((p) => (
             <p key={p.dataKey} style={{ margin: 0, color: p.color, opacity: 0.8 }}>
