@@ -84,7 +84,7 @@ function DiscoveryDelay({ days }) {
       {!data ? <></> : (
         <div className="graph small">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+            <BarChart data={data.filter((d) => d.bucket !== "never")} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
               <XAxis dataKey="label" tick={{ fill: "white", fontSize: 12 }} angle={-30} textAnchor="end" interval={0} />
               <YAxis tick={{ fill: "white" }} />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
