@@ -35,18 +35,17 @@ function UserCard({ user }) {
       display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
       minWidth: 160,
     }}>
-      <div style={{ position: "relative" }}>
-        {user.UserId ? (
+      <div style={{ position: "relative", width: 48, height: 48, flexShrink: 0 }}>
+        <AccountCircleFillIcon size={48} style={{ position: "absolute", top: 0, left: 0 }} />
+        {user.UserId && (
           <img
             src={`${baseUrl}/proxy/Users/Images/Primary?id=${user.UserId}&quality=50`}
             alt=""
-            style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover" }}
+            style={{ position: "absolute", top: 0, left: 0, width: 48, height: 48, borderRadius: "50%", objectFit: "cover" }}
             onError={(e) => { e.target.style.display = "none"; }}
           />
-        ) : (
-          <AccountCircleFillIcon size={48} />
         )}
-        <span style={{ position: "absolute", bottom: -4, right: -4, fontSize: 20 }}>
+        <span style={{ position: "absolute", bottom: -4, right: -4, fontSize: 20, lineHeight: 1 }}>
           {dominant.label}
         </span>
       </div>
