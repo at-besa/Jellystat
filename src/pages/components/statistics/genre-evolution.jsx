@@ -77,13 +77,6 @@ function GenreEvolution({ days }) {
       return b;
     });
 
-    // Use the last TWO complete buckets as extra context for the spline tangent
-    // (only if they exist — gives smoother curve direction into the prediction)
-    if (n >= 3 && prevLast) {
-      const prevPrev = result[n - 3];
-      genres.forEach((g) => { prevPrev[g + "_pred"] = prevPrev[g]; });
-    }
-
     return result;
   })();
 
